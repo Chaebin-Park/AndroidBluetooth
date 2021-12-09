@@ -8,9 +8,11 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import com.example.bluetoothserver.databinding.ActivityMainBinding
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
 import com.example.bluetoothserver.net.BTConstant.BT_REQUEST_ENABLE
@@ -20,61 +22,58 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var bind: ActivityMainBinding
+
     private var handler: Handler = Handler(Looper.getMainLooper())
     private var sbLog = StringBuilder()
     private lateinit var btServer: BluetoothServer
 
-    private lateinit var svLogView: ScrollView
-    private lateinit var tvLogView: TextView
-    private lateinit var etMessage: EditText
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        bind = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(bind.root)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkPermission()
         }
 
         btServer = BluetoothServer(this)
-
         AppController.Instance.init(this, btServer)
 
-        initUI()
         setListener()
 
         btServer.setOnSocketListener(mOnSocketListener)
         btServer.accept()
     }
 
-    private fun initUI() {
-        svLogView = findViewById(R.id.svLogView)
-        tvLogView = findViewById(R.id.tvLogView)
-        etMessage = findViewById(R.id.etMessage)
-    }
-
     private fun setListener() {
-        findViewById<Button>(R.id.btnAccept).setOnClickListener {
+        bind.btnAccept.setOnClickListener {
             btServer.accept()
         }
 
-        findViewById<Button>(R.id.btnStop).setOnClickListener {
+        bind.btnStop.setOnClickListener {
             btServer.stop()
         }
 
-        findViewById<Button>(R.id.btnSendData).setOnClickListener {
-            if (etMessage.text.toString().isNotEmpty()) {
-                btServer.sendData(etMessage.text.toString())
-                //etMessage.setText("")
+        bind.btnSendData.setOnClickListener {
+            if (bind.etMessage.text.toString().isNotEmpty()) {
+                btServer.sendData(bind.etMessage.text.toString())
+                bind.etMessage.setText("")
             }
         }
     }
 
     fun log(message: String) {
+        if(message.trimIndent() == "CAMERA") {
+            intent = Intent(this, CameraActivity::class.java)
+            startActivity(intent)
+            sbLog.clear()
+            bind.tvLogView.text = ""
+        }
         sbLog.append(message.trimIndent() + "\n")
         handler.post {
-            tvLogView.text = sbLog.toString()
-            svLogView.fullScroll(ScrollView.FOCUS_DOWN)
+            bind.tvLogView.text = sbLog.toString()
+            bind.svLogView.fullScroll(ScrollView.FOCUS_DOWN)
         }
     }
 
@@ -118,8 +117,8 @@ class MainActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.M)
     fun checkPermission() {
         val permissions = arrayOf(
-                Manifest.permission.BLUETOOTH,
-                Manifest.permission.BLUETOOTH_ADMIN
+            Manifest.permission.BLUETOOTH,
+            Manifest.permission.BLUETOOTH_ADMIN
         )
 
         for (permission in permissions) {
@@ -131,9 +130,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onRequestPermissionsResult(
-            requestCode: Int,
-            permissions: Array<out String>,
-            grantResults: IntArray
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == 0) {
@@ -141,22 +140,17 @@ class MainActivity : AppCompatActivity() {
                 if (element == PackageManager.PERMISSION_GRANTED) {
                 } else {
                     TedPermission(this)
-                            .setPermissionListener(object : PermissionListener {
-                                override fun onPermissionGranted() {
-
-                                }
-
-                                override fun onPermissionDenied(deniedPermissions: ArrayList<String?>) {
-
-                                }
-                            })
-                            .setDeniedMessage("You have permission to set up.")
-                            .setPermissions(
-                                    Manifest.permission.BLUETOOTH,
-                                    Manifest.permission.BLUETOOTH_ADMIN
-                            )
-                            .setGotoSettingButton(true)
-                            .check();
+                        .setPermissionListener(object : PermissionListener {
+                            override fun onPermissionGranted() {}
+                            override fun onPermissionDenied(deniedPermissions: ArrayList<String?>) {}
+                        })
+                        .setDeniedMessage("You have permission to set up.")
+                        .setPermissions(
+                            Manifest.permission.BLUETOOTH,
+                            Manifest.permission.BLUETOOTH_ADMIN
+                        )
+                        .setGotoSettingButton(true)
+                        .check();
                 }
             }
         }

@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
 import com.example.bluetoothClient.activity.ScanActivity
+import com.example.bluetoothClient.databinding.ActivityMainBinding
 import com.example.bluetoothClient.net.BTConstant.BT_REQUEST_ENABLE
 import com.example.bluetoothClient.net.BluetoothClient
 import com.example.bluetoothClient.net.SocketListener
@@ -21,17 +22,16 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var bind: ActivityMainBinding
+
     private var handler: Handler = Handler(Looper.getMainLooper())
     private var sbLog = StringBuilder()
     private lateinit var btClient: BluetoothClient
 
-    private lateinit var svLogView: ScrollView
-    private lateinit var tvLogView: TextView
-    private lateinit var etMessage: EditText
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        bind = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(bind.root)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkPermission()
@@ -41,38 +41,35 @@ class MainActivity : AppCompatActivity() {
         AppController.Instance.init(this, btClient)
         btClient.setOnSocketListener(mOnSocketListener)
 
-        initUI()
         setListener()
     }
 
-    private fun initUI() {
-        svLogView = findViewById(R.id.svLogView)
-        tvLogView = findViewById(R.id.tvLogView)
-        etMessage = findViewById(R.id.etMessage)
-    }
-
     private fun setListener() {
-        findViewById<Button>(R.id.btnScan).setOnClickListener {
+        bind.btnScan.setOnClickListener {
             ScanActivity.startForResult(this, 102)
         }
 
-        findViewById<Button>(R.id.btnDisconnect).setOnClickListener {
+        bind.btnDisconnect.setOnClickListener {
             btClient.disconnectFromServer()
         }
 
-        findViewById<Button>(R.id.btnSendData).setOnClickListener {
-            if (etMessage.text.toString().isNotEmpty()) {
-                btClient.sendData(etMessage.text.toString())
-                //etCommand.setText("")
+        bind.btnSendData.setOnClickListener {
+            if (bind.etMessage.text.toString().isNotEmpty()) {
+                btClient.sendData(bind.etMessage.text.toString())
+                bind.etMessage.setText("")
             }
+        }
+
+        bind.btnCamera.setOnClickListener {
+            btClient.sendData("CAMERA")
         }
     }
 
     private fun log(message: String) {
         sbLog.append(message.trimIndent() + "\n")
         handler.post {
-            tvLogView.text = sbLog.toString()
-            svLogView.fullScroll(ScrollView.FOCUS_DOWN)
+            bind.tvLogView.text = sbLog.toString()
+            bind.svLogView.fullScroll(ScrollView.FOCUS_DOWN)
         }
     }
 
@@ -140,13 +137,8 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     TedPermission(this)
                         .setPermissionListener(object : PermissionListener {
-                            override fun onPermissionGranted() {
-
-                            }
-
-                            override fun onPermissionDenied(deniedPermissions: ArrayList<String?>) {
-
-                            }
+                            override fun onPermissionGranted() {}
+                            override fun onPermissionDenied(deniedPermissions: ArrayList<String?>) {}
                         })
                         .setDeniedMessage("You have permission to set up.")
                         .setPermissions(
