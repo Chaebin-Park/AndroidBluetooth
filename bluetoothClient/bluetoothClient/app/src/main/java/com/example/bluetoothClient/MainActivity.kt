@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -20,9 +21,9 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
-    private var handler: Handler = Handler()
+    private var handler: Handler = Handler(Looper.getMainLooper())
     private var sbLog = StringBuilder()
-    private var btClient: BluetoothClient = BluetoothClient()
+    private lateinit var btClient: BluetoothClient
 
     private lateinit var svLogView: ScrollView
     private lateinit var tvLogView: TextView
@@ -36,12 +37,12 @@ class MainActivity : AppCompatActivity() {
             checkPermission()
         }
 
+        this.btClient = BluetoothClient(this)
         AppController.Instance.init(this, btClient)
+        btClient.setOnSocketListener(mOnSocketListener)
 
         initUI()
         setListener()
-
-        btClient.setOnSocketListener(mOnSocketListener)
     }
 
     private fun initUI() {

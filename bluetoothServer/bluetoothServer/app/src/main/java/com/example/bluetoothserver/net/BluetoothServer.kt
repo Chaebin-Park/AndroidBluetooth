@@ -1,15 +1,18 @@
 package com.example.bluetoothserver.net
 
+import android.app.Activity
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothServerSocket
 import android.bluetooth.BluetoothSocket
+import android.content.Context
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.io.OutputStream
 
-class BluetoothServer {
-
-    private var btAdapter = BluetoothAdapter.getDefaultAdapter()
+class BluetoothServer(activity: Activity) {
+    private var btManager = activity.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+    private var btAdapter = btManager.adapter
     private var acceptThread: AcceptThread? = null
     private var commThread: CommThread? = null
     private var inputStream: InputStream? = null

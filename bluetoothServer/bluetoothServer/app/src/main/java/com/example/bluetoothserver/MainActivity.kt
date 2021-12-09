@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -19,9 +20,9 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
-    private var handler: Handler = Handler()
+    private var handler: Handler = Handler(Looper.getMainLooper())
     private var sbLog = StringBuilder()
-    private var btServer: BluetoothServer = BluetoothServer()
+    private lateinit var btServer: BluetoothServer
 
     private lateinit var svLogView: ScrollView
     private lateinit var tvLogView: TextView
@@ -34,6 +35,8 @@ class MainActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkPermission()
         }
+
+        btServer = BluetoothServer(this)
 
         AppController.Instance.init(this, btServer)
 

@@ -7,10 +7,11 @@
         <entry key="..\:/Users/Administrator/AndroidStudioProjects/bluetoothClient/bluetoothClient/app/src/main/res/layout/activity_main.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/Administrator/AndroidStudioProjects/bluetoothClient/bluetoothClient/app/src/main/res/layout/activity_scan.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/Administrator/AndroidStudioProjects/bluetoothClient/bluetoothClient/app/src/main/res/layout/item_device.xml" value="0.36614583333333334" />
+        <entry key="..\:/Users/coqls/Documents/AndroidBluetooth/bluetoothClient/bluetoothClient/app/src/main/res/layout/activity_main.xml" value="0.16666666666666666" />
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">
