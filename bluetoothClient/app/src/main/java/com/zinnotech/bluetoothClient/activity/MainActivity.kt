@@ -1,20 +1,20 @@
 package com.zinnotech.bluetoothClient.activity
 
 import android.Manifest
-import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Base64
+import android.util.Log
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.activity.result.ActivityResult
-import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -24,7 +24,6 @@ import com.example.bluetoothClient.databinding.ActivityMainBinding
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
 import com.zinnotech.bluetoothClient.AppController
-import com.zinnotech.bluetoothClient.net.BTConstant.BT_REQUEST_ENABLE
 import com.zinnotech.bluetoothClient.net.BluetoothClient
 import com.zinnotech.bluetoothClient.net.SocketListener
 import java.util.*
@@ -130,18 +129,33 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onReceive(msg: String?) {
-            val regex = "(https|http)://(.+)".toRegex()
+            val urlRegex = "(https|http)://(.+)".toRegex()
 
-            if(msg?.matches(regex) == true) {
-                val intent = Intent(this@MainActivity, WebActivity::class.java)
-                intent.putExtra(resources.getString(R.string.intent_data), msg)
-                startActivity(intent)
-            }
-            else if(msg?.trimIndent() == "KEYBOARD") {
-                val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.showSoftInput(bind.etMessage, InputMethodManager.SHOW_IMPLICIT)
-            } else {
-                msg?.let { log("Receive : $it\n") }
+            if (msg != null) {
+                when {
+                    msg.length >= 100 -> {
+                        Log.e("LOG_TEST", msg)
+                        var str = msg.replace("\n", "").replace(" ", "")
+                        str = str.trimIndent()
+                        val intent = Intent(this@MainActivity, BitmapActivity::class.java)
+                        intent.putExtra(resources.getString(R.string.intent_data), str)
+                        startActivity(intent)
+                    }
+                    msg.matches(urlRegex) -> {
+                        Log.e("URL_TEST_MAIN", msg)
+                        log("Receive : $msg\n")
+                        val intent = Intent(this@MainActivity, WebActivity::class.java)
+                        intent.putExtra(resources.getString(R.string.intent_data), msg)
+                        startActivity(intent)
+                    }
+                    msg.trimIndent() == "KEYBOARD" -> {
+                        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                        imm.showSoftInput(bind.etMessage, InputMethodManager.SHOW_IMPLICIT)
+                    }
+                    else -> {
+                        log("Receive : $msg\n")
+                    }
+                }
             }
         }
 

@@ -52,17 +52,24 @@
         </ScrollView>
 
         <Button
+            android:id="@+id/btnQr"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/qr"
+            android:textAllCaps="false" />
+
+        <Button
             android:id="@+id/btnAccept"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Accept"
+            android:text="@string/accept"
             android:textAllCaps="false" />
 
         <Button
             android:id="@+id/btnStop"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Stop"
+            android:text="@string/stop"
             android:textAllCaps="false" />
 
     </LinearLayout>

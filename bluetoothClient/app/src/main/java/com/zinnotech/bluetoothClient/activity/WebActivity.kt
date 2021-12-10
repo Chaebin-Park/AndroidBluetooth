@@ -3,6 +3,7 @@ package com.zinnotech.bluetoothClient.activity
 import android.graphics.Bitmap
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
@@ -21,6 +22,8 @@ class WebActivity : AppCompatActivity() {
         setContentView(bind.root)
 
         url = intent.getStringExtra(resources.getString(R.string.intent_data)) as String
+
+        Log.e("URL_TEST_WEB", url)
 
         initWebView()
     }
