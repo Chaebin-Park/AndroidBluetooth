@@ -42,10 +42,4 @@ class ScanActivity : AppCompatActivity() {
         fun connectToServer(device: BluetoothDevice)
     }
 
-    companion object {
-        fun startForResult(context: Activity, requestCode: Int) =
-            context.startActivityForResult(
-                Intent(context, ScanActivity::class.java), requestCode
-            )
-    }
 }

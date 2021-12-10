@@ -3,4 +3,10 @@
     <string name="camera">Camera</string>
     <string name="scan">Scan</string>
     <string name="disconnect">Disconnect</string>
+    <string name="qr">QR</string>
+    <string name="intent_data">DATA</string>
+    <string name="enter_message">Enter message</string>
+    <string name="send">Send</string>
+    <string name="reset_log">reset log</string>
+    <string name="clear">Clear</string>
 </resources>

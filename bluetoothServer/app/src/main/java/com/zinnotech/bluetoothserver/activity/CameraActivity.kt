@@ -1,6 +1,7 @@
 package com.zinnotech.bluetoothserver.activity
 
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.ImageFormat
 import android.hardware.Sensor
@@ -67,11 +68,12 @@ class CameraActivity : AppCompatActivity() {
     private fun takePhoto() {
         val imageCapture = imageCapture ?: return
 
+        val fileName = SimpleDateFormat(
+            FILENAME_FORMAT, Locale.KOREA
+        ).format(System.currentTimeMillis()) + ".jpg"
+
         val photoFile = File(
-            outputDirectory,
-            SimpleDateFormat(
-                FILENAME_FORMAT, Locale.KOREA
-            ).format(System.currentTimeMillis()) + ".jpg"
+            outputDirectory,fileName
         )
 
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
@@ -83,6 +85,12 @@ class CameraActivity : AppCompatActivity() {
                     val msg = "Photo capture succeeded: $savedUri"
                     Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                     Log.d(TAG, msg)
+
+                    val intent = Intent(this@CameraActivity, MainActivity::class.java).apply {
+                        putExtra(resources.getString(R.string.intent_data), savedUri)
+                    }
+                    setResult(RESULT_OK, intent)
+                    finish()
                 }
 
                 override fun onError(exception: ImageCaptureException) {
@@ -95,7 +103,7 @@ class CameraActivity : AppCompatActivity() {
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
 
-        cameraProviderFuture.addListener(Runnable {
+        cameraProviderFuture.addListener({
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
 
             val preview = Preview.Builder()

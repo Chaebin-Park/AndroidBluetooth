@@ -8,9 +8,17 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import com.example.bluetoothClient.R
 
 import com.example.bluetoothClient.databinding.ActivityMainBinding
 import com.gun0912.tedpermission.PermissionListener
@@ -20,6 +28,7 @@ import com.zinnotech.bluetoothClient.net.BTConstant.BT_REQUEST_ENABLE
 import com.zinnotech.bluetoothClient.net.BluetoothClient
 import com.zinnotech.bluetoothClient.net.SocketListener
 import java.util.*
+import android.widget.TextView.OnEditorActionListener
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,6 +37,8 @@ class MainActivity : AppCompatActivity() {
     private var handler: Handler = Handler(Looper.getMainLooper())
     private var sbLog = StringBuilder()
     private lateinit var btClient: BluetoothClient
+
+    private lateinit var resultLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,32 +49,63 @@ class MainActivity : AppCompatActivity() {
             checkPermission()
         }
 
+        bind.etMessage.requestFocus()
+
+        resultLauncher = registerForActivityResult(
+            StartActivityForResult()
+        ) { result: ActivityResult ->
+            if (result.resultCode == RESULT_OK) {
+                Toast.makeText(applicationContext, "블루투스 활성화", Toast.LENGTH_LONG).show()
+                finish()
+            } else if (result.resultCode == RESULT_CANCELED) {
+                Toast.makeText(applicationContext, "취소", Toast.LENGTH_LONG).show()
+            }
+        }
+
         this.btClient = BluetoothClient(this)
         AppController.Instance.init(this, btClient)
         btClient.setOnSocketListener(mOnSocketListener)
 
         setListener()
+
+        bind.etMessage.setOnEditorActionListener(OnEditorActionListener { v, actionId, event ->
+            when (actionId) {
+                EditorInfo.IME_ACTION_SEND -> {
+                    if (bind.etMessage.text.toString().isNotEmpty()) {
+                        btClient.sendData(bind.etMessage.text.toString())
+                        bind.etMessage.setText("")
+                    }
+                }
+                else ->
+                    return@OnEditorActionListener false
+            }
+            true
+        })
     }
 
     private fun setListener() {
         bind.btnScan.setOnClickListener {
-            ScanActivity.startForResult(this, 102)
+            val intent = Intent(this, ScanActivity::class.java)
+            resultLauncher.launch(intent)
         }
 
         bind.btnDisconnect.setOnClickListener {
             btClient.disconnectFromServer()
         }
 
-        bind.btnSendData.setOnClickListener {
-            if (bind.etMessage.text.toString().isNotEmpty()) {
-                btClient.sendData(bind.etMessage.text.toString())
-                bind.etMessage.setText("")
-            }
+        bind.btnClearData.setOnClickListener {
+            sbLog.clear()
+            bind.tvLogView.text = ""
         }
 
         bind.btnCamera.setOnClickListener {
             btClient.sendData("CAMERA")
         }
+
+        bind.btnQr.setOnClickListener {
+            btClient.sendData("QR")
+        }
+
     }
 
     private fun log(message: String) {
@@ -88,7 +130,19 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onReceive(msg: String?) {
-            msg?.let { log("Receive : $it\n") }
+            val regex = "(https|http)://(.+)".toRegex()
+
+            if(msg?.matches(regex) == true) {
+                val intent = Intent(this@MainActivity, WebActivity::class.java)
+                intent.putExtra(resources.getString(R.string.intent_data), msg)
+                startActivity(intent)
+            }
+            else if(msg?.trimIndent() == "KEYBOARD") {
+                val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.showSoftInput(bind.etMessage, InputMethodManager.SHOW_IMPLICIT)
+            } else {
+                msg?.let { log("Receive : $it\n") }
+            }
         }
 
         override fun onSend(msg: String?) {
@@ -98,17 +152,6 @@ class MainActivity : AppCompatActivity() {
         override fun onLogPrint(msg: String?) {
             msg?.let { log("$it\n") }
         }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        when (requestCode) {
-            BT_REQUEST_ENABLE -> if (resultCode == Activity.RESULT_OK) {
-                Toast.makeText(applicationContext, "블루투스 활성화", Toast.LENGTH_LONG).show()
-            } else if (resultCode == Activity.RESULT_CANCELED) {
-                Toast.makeText(applicationContext, "취소", Toast.LENGTH_LONG).show()
-            }
-        }
-        super.onActivityResult(requestCode, resultCode, data)
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -136,7 +179,6 @@ class MainActivity : AppCompatActivity() {
             for (element in grantResults) {
                 if (element == PackageManager.PERMISSION_GRANTED) {
                 } else {
-
                     TedPermission.with(this)
                         .setPermissionListener(object : PermissionListener {
                             override fun onPermissionGranted() {}

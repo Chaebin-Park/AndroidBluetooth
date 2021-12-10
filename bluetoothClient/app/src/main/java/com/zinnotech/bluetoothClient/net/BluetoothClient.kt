@@ -179,17 +179,19 @@ class BluetoothClient(private val activity: Activity) {
     fun sendData(msg: String) {
         if (outputStream == null) return
 
-        try {
-            outputStream?.let {
-                onSend(msg)
+        if(msg != "CAMERA" || msg != "QR") {
+            try {
+                outputStream?.let {
+                    onSend(msg)
 
-                it.write(msg.toByteArray())
-                it.flush()
+                    it.write(msg.toByteArray())
+                    it.flush()
+                }
+            } catch (e: Exception) {
+                onError(e)
+                e.printStackTrace()
+                disconnectFromServer()
             }
-        } catch (e: Exception) {
-            onError(e)
-            e.printStackTrace()
-            disconnectFromServer()
         }
     }
 }

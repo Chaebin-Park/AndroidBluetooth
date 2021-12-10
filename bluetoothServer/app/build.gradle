@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId "com.zinnotech.bluetoothserver"
-        minSdkVersion 21
+        minSdkVersion 24
         targetSdkVersion 31
         versionCode 1
         versionName "1.0"
@@ -54,4 +54,7 @@ dependencies {
     implementation "androidx.camera:camera-lifecycle:1.0.2"
     // CameraX View class
     implementation "androidx.camera:camera-view:1.0.0-alpha31"
+
+    implementation("com.journeyapps:zxing-android-embedded:4.1.0") { transitive = false }
+    implementation "com.google.zxing:core:3.3.0"
 }

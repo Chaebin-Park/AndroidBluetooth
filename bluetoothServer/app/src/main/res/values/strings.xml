@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">bluetoothServer</string>
+    <string name="intent_data">DATA</string>
+    <string name="enter_message">Enter message</string>
+    <string name="send">Send</string>
+    <string name="clear">Clear</string>
 </resources>

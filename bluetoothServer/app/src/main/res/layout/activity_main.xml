@@ -15,14 +15,16 @@
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:gravity="center"
-            android:hint="Enter message" />
+            android:imeOptions="actionSend"
+            android:inputType="text"
+            android:hint="@string/enter_message" />
 
         <Button
-            android:id="@+id/btnSendData"
+            android:id="@+id/btnClearData"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Send"
+            android:text="@string/clear"
             android:textAllCaps="false" />
 
     </LinearLayout>
