@@ -1,13 +1,23 @@
 package com.zinnotech.bluetoothClient.activity
 
+import android.annotation.SuppressLint
+import android.app.Dialog
+import android.content.DialogInterface
 import android.graphics.Bitmap
+import android.net.http.SslError
+import android.os.Build
+import android.os.Build.VERSION.SDK
+import android.os.Build.VERSION.SDK_INT
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Message
 import android.util.Log
 import android.view.View
-import android.webkit.WebResourceRequest
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.view.ViewGroup
+import android.webkit.*
+import android.widget.ProgressBar
+import androidx.appcompat.app.AlertDialog
 import com.example.bluetoothClient.R
 import com.example.bluetoothClient.databinding.ActivityWebBinding
 
@@ -28,6 +38,7 @@ class WebActivity : AppCompatActivity() {
         initWebView()
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     private fun initWebView() {
         bind.webView.webViewClient = object : WebViewClient() {
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
@@ -39,16 +50,8 @@ class WebActivity : AppCompatActivity() {
                 super.onPageFinished(view, url)
                 bind.progressCircular.visibility = View.GONE
             }
-
-            override fun shouldOverrideUrlLoading(
-                view: WebView?,
-                request: WebResourceRequest?
-            ): Boolean {
-                view?.loadUrl(url)
-                return true
-            }
         }
-
+        bind.webView.settings.javaScriptEnabled = true
         bind.webView.loadUrl(url)
     }
 

@@ -191,8 +191,7 @@ class MainActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == 0) {
             for (element in grantResults) {
-                if (element == PackageManager.PERMISSION_GRANTED) {
-                } else {
+                if (element != PackageManager.PERMISSION_GRANTED) {
                     TedPermission.with(this)
                         .setPermissionListener(object : PermissionListener {
                             override fun onPermissionGranted() {}

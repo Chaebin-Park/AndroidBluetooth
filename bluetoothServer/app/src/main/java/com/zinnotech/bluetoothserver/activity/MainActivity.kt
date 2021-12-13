@@ -62,7 +62,8 @@ class MainActivity : AppCompatActivity() {
         ) { result: ActivityResult ->
             if (result.resultCode == RESULT_OK) {
                 Toast.makeText(applicationContext, "촬영 성공", Toast.LENGTH_LONG).show()
-                val uri: Uri = result.data!!.getParcelableExtra(resources.getString(R.string.intent_data))!!
+                val uri: Uri =
+                    result.data!!.getParcelableExtra(resources.getString(R.string.intent_data))!!
 
                 try {
                     val bitmap: Bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -195,7 +196,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onSend(msg: String?) {
-            msg?.let { log("Send : $it\n") }
+            if (msg!!.length <= 100)
+                log("Send : $msg\n")
         }
 
         override fun onLogPrint(msg: String?) {
@@ -226,8 +228,7 @@ class MainActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == 0) {
             for (element in grantResults) {
-                if (element == PackageManager.PERMISSION_GRANTED) {
-                } else {
+                if (element != PackageManager.PERMISSION_GRANTED) {
                     TedPermission.with(this)
                         .setPermissionListener(object : PermissionListener {
                             override fun onPermissionGranted() {}
