@@ -3,6 +3,8 @@ package com.zinnotech.bluetoothserver.activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
 import android.graphics.ImageFormat
 import android.hardware.Sensor
 import android.hardware.SensorManager
@@ -16,6 +18,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
+import android.provider.MediaStore
+import android.util.Base64
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.SurfaceHolder
@@ -30,7 +34,12 @@ import com.example.bluetoothserver.R
 import com.example.bluetoothserver.databinding.ActivityCameraBinding
 import com.google.android.gms.common.util.concurrent.HandlerExecutor
 import kotlinx.android.synthetic.main.activity_camera.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.IOException
 import java.lang.Exception
 import java.nio.ByteBuffer
 import java.text.SimpleDateFormat

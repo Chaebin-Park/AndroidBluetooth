@@ -115,6 +115,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private var sb: StringBuilder = StringBuilder()
+
     private val mOnSocketListener: SocketListener = object : SocketListener {
         override fun onConnect() {
             log("Connect!\n")
@@ -134,11 +136,14 @@ class MainActivity : AppCompatActivity() {
             if (msg != null) {
                 when {
                     msg.length >= 100 -> {
+
                         Log.e("LOG_TEST", msg)
-                        var str = msg.replace("\n", "").replace(" ", "")
-                        str = str.trimIndent()
+
+                        Log.e("LOG_TEST_MAIN", "LOG: $msg")
+                        Log.e("LOG_TEST_MAIN", "::\nLength:   ${msg.length}")
+
                         val intent = Intent(this@MainActivity, BitmapActivity::class.java)
-                        intent.putExtra(resources.getString(R.string.intent_data), str)
+                        intent.putExtra(resources.getString(R.string.intent_data), msg)
                         startActivity(intent)
                     }
                     msg.matches(urlRegex) -> {
@@ -156,6 +161,8 @@ class MainActivity : AppCompatActivity() {
                         log("Receive : $msg\n")
                     }
                 }
+
+                sbLog.clear()
             }
         }
 

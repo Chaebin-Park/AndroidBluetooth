@@ -1,7 +1,6 @@
 package com.zinnotech.bluetoothserver.activity
 
 import android.Manifest
-import android.R.attr
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -30,9 +29,7 @@ import com.gun0912.tedpermission.TedPermission
 import com.zinnotech.bluetoothserver.AppController
 import com.zinnotech.bluetoothserver.net.BluetoothServer
 import com.zinnotech.bluetoothserver.net.SocketListener
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.util.*
@@ -55,6 +52,8 @@ class MainActivity : AppCompatActivity() {
         bind = ActivityMainBinding.inflate(layoutInflater)
         setContentView(bind.root)
 
+
+
         checkPermission()
 
         cameraResultLauncher = registerForActivityResult(
@@ -72,17 +71,19 @@ class MainActivity : AppCompatActivity() {
                         MediaStore.Images.Media.getBitmap(contentResolver, uri)
                     }
 
-                    val str = GlobalScope.async {
-                        bitmapToString(bitmap)
-                    }
+                    bind.ivBitmap.setImageBitmap(bitmap)
 
-                    GlobalScope.launch {
-                        btServer.sendData(str.await())
+                    CoroutineScope(Dispatchers.Default).launch {
+                        val str =
+                            withContext(CoroutineScope(Dispatchers.Default).coroutineContext) {
+                                bitmapToString(bitmap)
+                            }
+                        delay(1000)
+                        btServer.sendData(str)
                     }
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }
-
             } else if (result.resultCode == RESULT_CANCELED) {
                 Toast.makeText(applicationContext, "취소", Toast.LENGTH_LONG).show()
             }
@@ -125,14 +126,18 @@ class MainActivity : AppCompatActivity() {
 
     private suspend fun bitmapToString(bitmap: Bitmap): String {
         val baos = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 20, baos)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 10, baos)
         val bytes = baos.toByteArray()
         var str = encodeToString(bytes, DEFAULT).trimIndent()
-        Log.e("LOG_TEST", str)
-        str = str.trim()
-        str = str.trimIndent()
-        str = str.replace("\n", "").replace(" ", "")
-        Log.e("LOG_TEST", str)
+
+        str = str.replace("\n", "")
+            .replace("\t","")
+            .replace(" ", "")
+
+        Log.e("LOG_TEST_MAIN", "LOG_AT: $str")
+        Log.e("LOG_TEST_MAIN", "::\n\nLength:   ${str.length}\nBAOS:    ${baos.size()}\nBitmap: ${bitmap.byteCount}")
+
+
         return str
     }
 

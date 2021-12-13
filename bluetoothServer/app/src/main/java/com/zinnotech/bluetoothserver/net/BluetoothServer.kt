@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothServerSocket
 import android.bluetooth.BluetoothSocket
 import android.content.Context
+import android.util.Log
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.io.OutputStream
@@ -107,7 +108,7 @@ class BluetoothServer(activity: Activity) {
             try {
                 acceptSocket = btAdapter.listenUsingRfcommWithServiceRecord(
                     "bluetoothTest",
-                    BTConstant.BLUETOOTH_UUID_INSECURE
+                    BTConstant.BLUETOOTH_UUID_SECURE
                 )
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -126,7 +127,7 @@ class BluetoothServer(activity: Activity) {
             }
 
             var len: Int
-            val buffer = ByteArray(1024)
+            val buffer = ByteArray(512)
             val byteArrayOutputStream = ByteArrayOutputStream()
 
             while (true) {
@@ -170,6 +171,9 @@ class BluetoothServer(activity: Activity) {
         try {
             outputStream?.let {
                 onSend(msg)
+
+                Log.e("LOG_TEST_SEND", msg)
+                Log.e("LOG_TEST_SEND", "${msg.length}")
 
                 it.write(msg.toByteArray())
                 it.flush()
