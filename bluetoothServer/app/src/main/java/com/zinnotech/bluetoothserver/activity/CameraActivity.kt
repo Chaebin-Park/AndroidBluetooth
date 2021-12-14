@@ -1,52 +1,25 @@
 package com.zinnotech.bluetoothserver.activity
 
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.ImageDecoder
-import android.graphics.ImageFormat
-import android.hardware.Sensor
-import android.hardware.SensorManager
 import android.hardware.camera2.*
-import android.hardware.camera2.params.OutputConfiguration
-import android.hardware.camera2.params.SessionConfiguration
-import android.media.ImageReader
 import android.net.Uri
-import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
-import android.os.HandlerThread
-import android.provider.MediaStore
-import android.util.Base64
-import android.util.DisplayMetrics
 import android.util.Log
-import android.view.SurfaceHolder
-import android.view.WindowManager
 import android.widget.Toast
-import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.bluetoothserver.R
 import com.example.bluetoothserver.databinding.ActivityCameraBinding
-import com.google.android.gms.common.util.concurrent.HandlerExecutor
-import kotlinx.android.synthetic.main.activity_camera.*
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
-import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.IOException
-import java.lang.Exception
 import java.nio.ByteBuffer
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import java.util.jar.Manifest
 
 typealias LumaListener = (luma: Double) -> Unit
 

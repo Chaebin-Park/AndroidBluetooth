@@ -139,7 +139,7 @@ class BluetoothClient(private val activity: Activity) {
             }
 
             var len: Int
-            val buffer = ByteArray(512)
+            val buffer = ByteArray(1024)
             val byteArrayOutputStream = ByteArrayOutputStream()
 
             while (true) {
@@ -154,8 +154,8 @@ class BluetoothClient(private val activity: Activity) {
                             val dataByteArray = byteArrayOutputStream.toByteArray()
                             val dataString = String(dataByteArray)
 
-                            Log.e("LOG_TEST_RECV", dataString)
-                            Log.e("LOG_TEST_RECV", "${dataString.length}")
+//                            Log.e("LOG_TEST_RECV", dataString)
+//                            Log.e("LOG_TEST_RECV", "${dataString.length}")
 
                             onReceive(dataString)
 

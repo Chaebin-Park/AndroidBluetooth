@@ -23,6 +23,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.NoActionBar">
         <activity
+            android:name="com.zinnotech.bluetoothserver.activity.LowVersionCameraActivity"
+            android:exported="false" />
+        <activity
             android:name="com.zinnotech.bluetoothserver.activity.CustomQrScannerActivity"
             android:exported="false" />
         <activity

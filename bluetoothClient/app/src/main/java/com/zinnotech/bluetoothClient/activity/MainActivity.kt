@@ -116,6 +116,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private var sb: StringBuilder = StringBuilder()
+    private var bitmapFlag: Boolean = false
 
     private val mOnSocketListener: SocketListener = object : SocketListener {
         override fun onConnect() {
@@ -132,19 +133,48 @@ class MainActivity : AppCompatActivity() {
 
         override fun onReceive(msg: String?) {
             val urlRegex = "(https|http)://(.+)".toRegex()
+            val prefix = "START"
+            val suffix = "END"
 
             if (msg != null) {
                 when {
-                    msg.length >= 100 -> {
-
-                        Log.e("LOG_TEST", msg)
-
-                        Log.e("LOG_TEST_MAIN", "LOG: $msg")
+                    msg.startsWith(prefix) and msg.endsWith(suffix) -> {
+                        Log.e("LOG_TEST_MAIN", "GOOD: $msg")
                         Log.e("LOG_TEST_MAIN", "::\nLength:   ${msg.length}")
 
+                        val str = msg.replace(prefix, "")
+                            .replace(suffix, "")
+
                         val intent = Intent(this@MainActivity, BitmapActivity::class.java)
-                        intent.putExtra(resources.getString(R.string.intent_data), msg)
+                        intent.putExtra(resources.getString(R.string.intent_data), str)
                         startActivity(intent)
+                        sb.clear()
+                    }
+                    msg.startsWith(prefix) -> {
+                        Log.e("LOG_TEST_MAIN", "P: $msg")
+                        Log.e("LOG_TEST_MAIN", "::\nLength:   ${msg.length}")
+
+                        sb.append(msg)
+                        bitmapFlag = true
+                    }
+                    bitmapFlag -> {
+                        Log.e("LOG_TEST_MAIN", "W: $msg")
+                        Log.e("LOG_TEST_MAIN", "::\nLength:   ${msg.length}")
+
+                        sb.append(msg)
+
+                        if(msg.endsWith(suffix)) {
+                            val str = sb.toString().replace(prefix, "").replace(suffix, "")
+
+                            Log.e("LOG_TEST_MAIN", "R: $str")
+                            Log.e("LOG_TEST_MAIN", "::\nLength:   ${str.length}")
+
+                            val intent = Intent(this@MainActivity, BitmapActivity::class.java)
+                            intent.putExtra(resources.getString(R.string.intent_data), str)
+                            startActivity(intent)
+                            sb.clear()
+                            bitmapFlag = false
+                        }
                     }
                     msg.matches(urlRegex) -> {
                         Log.e("URL_TEST_MAIN", msg)

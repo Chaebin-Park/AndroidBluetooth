@@ -127,7 +127,7 @@ class BluetoothServer(activity: Activity) {
             }
 
             var len: Int
-            val buffer = ByteArray(512)
+            val buffer = ByteArray(1024)
             val byteArrayOutputStream = ByteArrayOutputStream()
 
             while (true) {

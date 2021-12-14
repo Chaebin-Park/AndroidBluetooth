@@ -74,11 +74,12 @@ class MainActivity : AppCompatActivity() {
                     bind.ivBitmap.setImageBitmap(bitmap)
 
                     CoroutineScope(Dispatchers.Default).launch {
-                        val str =
+                        var str =
                             withContext(CoroutineScope(Dispatchers.Default).coroutineContext) {
                                 bitmapToString(bitmap)
                             }
                         delay(1000)
+                        str = "START" + str + "END"
                         btServer.sendData(str)
                     }
                 } catch (e: IOException) {
