@@ -80,6 +80,7 @@ class MainActivity : AppCompatActivity() {
                             }
                         delay(1000)
                         str = "START" + str + "END"
+
                         btServer.sendData(str)
                     }
                 } catch (e: IOException) {
@@ -127,7 +128,7 @@ class MainActivity : AppCompatActivity() {
 
     private suspend fun bitmapToString(bitmap: Bitmap): String {
         val baos = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 10, baos)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 30, baos)
         val bytes = baos.toByteArray()
         var str = encodeToString(bytes, DEFAULT).trimIndent()
 

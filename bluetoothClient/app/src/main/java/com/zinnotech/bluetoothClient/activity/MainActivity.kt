@@ -132,6 +132,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onReceive(msg: String?) {
+
             val urlRegex = "(https|http)://(.+)".toRegex()
             val prefix = "START"
             val suffix = "END"
@@ -191,8 +192,6 @@ class MainActivity : AppCompatActivity() {
                         log("Receive : $msg\n")
                     }
                 }
-
-                sbLog.clear()
             }
         }
 

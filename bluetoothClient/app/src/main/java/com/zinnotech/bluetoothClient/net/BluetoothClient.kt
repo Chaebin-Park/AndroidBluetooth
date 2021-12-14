@@ -7,6 +7,9 @@ import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothSocket
 import android.content.Context
 import android.util.Log
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.io.OutputStream
@@ -151,14 +154,10 @@ class BluetoothClient(private val activity: Activity) {
                     socket.inputStream?.available()?.let { available ->
 
                         if (available == 0) {
+
                             val dataByteArray = byteArrayOutputStream.toByteArray()
                             val dataString = String(dataByteArray)
-
-//                            Log.e("LOG_TEST_RECV", dataString)
-//                            Log.e("LOG_TEST_RECV", "${dataString.length}")
-
-                            onReceive(dataString)
-
+                            CoroutineScope(Dispatchers.IO).launch { onReceive(dataString) }
                             byteArrayOutputStream.reset()
                             byteArrayOutputStream.close()
                         }
